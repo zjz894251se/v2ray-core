@@ -97,6 +97,13 @@ var registerRequests []registerRequest
 // RegisterImplementation register an implementation of a type of interface
 // loader(CustomLoader) is a private API, its interface is subject to breaking changes
 func RegisterImplementation(proto interface{}, loader CustomLoader) error {
+	// 为了方便覆盖，去掉旧的实现
+	for idx,r := range registerRequests{
+		if r.proto == proto {
+			registerRequests = append(registerRequests[:idx],registerRequests[idx+1:]...)
+			break
+		}
+	}
 	registerRequests = append(registerRequests, registerRequest{
 		proto:  proto,
 		loader: loader,

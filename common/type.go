@@ -15,9 +15,10 @@ var typeCreatorRegistry = make(map[reflect.Type]ConfigCreator)
 // RegisterConfig registers a global config creator. The config can be nil but must have a type.
 func RegisterConfig(config interface{}, configCreator ConfigCreator) error {
 	configType := reflect.TypeOf(config)
-	if _, found := typeCreatorRegistry[configType]; found {
-		return newError(configType.Name() + " is already registered").AtError()
-	}
+	//为了方便覆盖自定义实现，取消掉重复判断
+	//if _, found := typeCreatorRegistry[configType]; found {
+	//	return newError(configType.Name() + " is already registered").AtError()
+	//}
 	typeCreatorRegistry[configType] = configCreator
 
 	registry.RegisterImplementation(config, nil)
