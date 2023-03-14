@@ -350,3 +350,7 @@ func (s *Instance) Start() error {
 
 	return nil
 }
+
+func (s *Instance) Context() context.Context{
+	return s.ctx
+}
