@@ -354,3 +354,7 @@ func (s *Instance) Start() error {
 func (s *Instance) Context() context.Context{
 	return s.ctx
 }
+
+func (s *Instance) IsRunning() bool {
+	return s.IsRunning()
+}

@@ -229,7 +229,7 @@ func (h *Handler) Process(ctx context.Context, network net.Network, connection i
 	reader := &buf.BufferedReader{Reader: buf.NewReader(connection)}
 	svrSession := encoding.NewServerSession(h.clients, h.sessionHistory)
 	svrSession.SetAEADForced(aeadForced)
-	request, err := svrSession.DecodeRequestHeader(reader)
+	request, err := svrSession.DecodeRequestHeader(ctx, reader)
 	if err != nil {
 		if errors.Cause(err) != io.EOF {
 			log.Record(&log.AccessMessage{

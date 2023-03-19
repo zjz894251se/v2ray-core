@@ -2,11 +2,13 @@ package encoding
 
 import (
 	"bytes"
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/binary"
+	"github.com/v2fly/v2ray-core/v5/custom"
 	"hash/fnv"
 	"io"
 	"sync"
@@ -136,7 +138,7 @@ func parseSecurityType(b byte) protocol.SecurityType {
 }
 
 // DecodeRequestHeader decodes and returns (if successful) a RequestHeader from an input stream.
-func (s *ServerSession) DecodeRequestHeader(reader io.Reader) (*protocol.RequestHeader, error) {
+func (s *ServerSession) DecodeRequestHeader(ctx context.Context, reader io.Reader) (*protocol.RequestHeader, error) {
 	buffer := buf.New()
 
 	drainer, err := drain.NewBehaviorSeedLimitedDrainer(int64(s.userValidator.GetBehaviorSeed()), 16+38, 3266, 64)
@@ -169,6 +171,7 @@ func (s *ServerSession) DecodeRequestHeader(reader io.Reader) (*protocol.Request
 	switch {
 	case foundAEAD:
 		vmessAccount = user.Account.(*vmess.MemoryAccount)
+		custom.BindSessionClientId(ctx, vmessAccount.ID.String())
 		var fixedSizeCmdKey [16]byte
 		copy(fixedSizeCmdKey[:], vmessAccount.ID.CmdKey())
 		aeadData, shouldDrain, bytesRead, errorReason := vmessaead.OpenVMessAEADHeader(fixedSizeCmdKey, fixedSizeAuthID, reader)

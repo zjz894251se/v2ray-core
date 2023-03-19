@@ -2,6 +2,7 @@ package inbound
 
 import (
 	"context"
+	"github.com/v2fly/v2ray-core/v5/custom"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -100,6 +101,7 @@ func (w *tcpWorker) callback(conn internet.Connection) {
 	if err := w.proxy.Process(ctx, net.Network_TCP, conn, w.dispatcher); err != nil {
 		newError("connection ends").Base(err).WriteToLog(session.ExportIDToError(ctx))
 	}
+	defer custom.UnBindSessionClientId(ctx)
 	cancel()
 	if err := conn.Close(); err != nil {
 		newError("failed to close connection").Base(err).WriteToLog(session.ExportIDToError(ctx))
