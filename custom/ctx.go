@@ -8,7 +8,8 @@ import (
 
 type SessionClientKV struct {
 	sync.Mutex
-	mps map[session.ID]string
+	mps        map[session.ID]string
+	onBindCall func(session.ID, string)
 }
 
 func (kv *SessionClientKV) Bind(sessionId session.ID, clientId string) {
@@ -29,6 +30,10 @@ func (kv *SessionClientKV) UnBind(sessionId session.ID) {
 	delete(kv.mps, sessionId)
 }
 
+func (kv *SessionClientKV) RegisterOnBindCall(call func(session.ID, string)) {
+	kv.onBindCall = call
+}
+
 var _sessionClientKv = &SessionClientKV{mps: make(map[session.ID]string)}
 
 func BindSessionClientId(ctx context.Context, clientId string) {
@@ -41,4 +46,8 @@ func ClientIdFromContext(ctx context.Context) string {
 
 func UnBindSessionClientId(ctx context.Context) {
 	_sessionClientKv.UnBind(session.IDFromContext(ctx))
+}
+
+func RegisterSessionOnBindCall(call func(session.ID, string)) {
+	_sessionClientKv.RegisterOnBindCall(call)
 }

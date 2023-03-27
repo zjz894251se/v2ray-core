@@ -351,10 +351,10 @@ func (s *Instance) Start() error {
 	return nil
 }
 
-func (s *Instance) Context() context.Context{
+func (s *Instance) Context() context.Context {
 	return s.ctx
 }
 
 func (s *Instance) IsRunning() bool {
-	return s.IsRunning()
+	return s.running
 }
